@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     public int CrystalsCollected { get; private set; }
     public int TotalCrystals => totalCrystals;
     public bool IsGameActive { get; private set; }
+    public float ElapsedTime { get; private set; }
 
     public System.Action<float> OnTimeChanged;
     public System.Action<int> OnScoreChanged;
@@ -37,6 +38,7 @@ public class GameManager : MonoBehaviour
         Score = 0;
         CrystalsCollected = 0;
         IsGameActive = true;
+        ElapsedTime = 0f;
 
         OnTimeChanged?.Invoke(TimeRemaining);
         OnScoreChanged?.Invoke(Score);
@@ -49,6 +51,8 @@ public class GameManager : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 
         if (!IsGameActive) return;
+
+        ElapsedTime += Time.deltaTime;
 
         TimeRemaining -= Time.deltaTime;
         if (TimeRemaining < 0f) TimeRemaining = 0f;
@@ -66,6 +70,20 @@ public class GameManager : MonoBehaviour
         OnScoreChanged?.Invoke(Score);
         if (CrystalsCollected >= totalCrystals)
             TriggerVictory();
+    }
+
+    public void AddTime(float seconds)
+    {
+        if (!IsGameActive) return;
+        TimeRemaining += seconds;
+        OnTimeChanged?.Invoke(TimeRemaining);
+    }
+
+    public void AddScore(int amount)
+    {
+        if (!IsGameActive) return;
+        Score += amount;
+        OnScoreChanged?.Invoke(Score);
     }
 
     public void TakeDamage()
