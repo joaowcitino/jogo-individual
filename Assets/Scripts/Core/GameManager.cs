@@ -7,9 +7,13 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     [Header("Game Settings")]
-    [SerializeField] private float timeLimit = 60f;
-    [SerializeField] private int totalCrystals = 10;
+    [SerializeField] private float timeLimit = 40f;
+    [SerializeField] private int totalCrystals = 50;
     [SerializeField] private int startingLives = 3;
+
+    [Header("Crystal economy")]
+    [SerializeField] private float crystalO2Bonus = 2.5f;
+    [SerializeField] private int crystalScore = 50;
 
     public float TimeRemaining { get; private set; }
     public int Score { get; private set; }
@@ -66,8 +70,13 @@ public class GameManager : MonoBehaviour
     {
         if (!IsGameActive) return;
         CrystalsCollected++;
-        Score += 10;
+        Score += crystalScore;
         OnScoreChanged?.Invoke(Score);
+
+        // Crystals are the oxygen source — collecting sustains the player
+        TimeRemaining += crystalO2Bonus;
+        OnTimeChanged?.Invoke(TimeRemaining);
+
         if (CrystalsCollected >= totalCrystals)
             TriggerVictory();
     }
