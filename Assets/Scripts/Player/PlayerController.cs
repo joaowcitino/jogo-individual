@@ -13,14 +13,18 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
+    private CircleCollider2D circleCol;
     private Vector2 moveInput;
     private bool isInvincible;
     private float invincibilityTimer;
+
+    private static readonly Collider2D[] _overlapBuffer = new Collider2D[8];
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        circleCol = GetComponent<CircleCollider2D>();
     }
 
     public void OnMove(InputValue value)
@@ -35,7 +39,23 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
             return;
         }
+
         rb.MovePosition(rb.position + moveInput.normalized * moveSpeed * Time.fixedDeltaTime);
+
+        // Manual overlap check for enemies — more reliable than trigger callbacks
+        // between dynamic and kinematic bodies
+        if (!isInvincible)
+        {
+            int count = Physics2D.OverlapCircleNonAlloc(rb.position, circleCol.radius * 0.9f, _overlapBuffer);
+            for (int i = 0; i < count; i++)
+            {
+                if (_overlapBuffer[i] != null && _overlapBuffer[i].CompareTag("Enemy"))
+                {
+                    TakeEnemyDamage();
+                    break;
+                }
+            }
+        }
     }
 
     private void Update()
@@ -52,15 +72,16 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag("Coletavel")) return;
-        AudioManager.Instance?.PlayCollect();
-        GameManager.Instance?.CollectCrystal();
-        Destroy(other.gameObject);
+        if (other.CompareTag("Coletavel"))
+        {
+            AudioManager.Instance?.PlayCollect();
+            GameManager.Instance?.CollectCrystal();
+            Destroy(other.gameObject);
+        }
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
+    private void TakeEnemyDamage()
     {
-        if (!other.gameObject.CompareTag("Enemy") || isInvincible) return;
         isInvincible = true;
         invincibilityTimer = invincibilityDuration;
         AudioManager.Instance?.PlayDamage();
