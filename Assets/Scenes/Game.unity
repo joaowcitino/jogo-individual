@@ -283,6 +283,10 @@ MonoBehaviour:
   moveSpeed: 5
   invincibilityDuration: 1.5
   blinkRate: 12
+  projectilePrefab: {fileID: 493377497765333099, guid: 2d819d779e08c4b308a50643c50e3ab3, type: 3}
+  fireCooldown: 0.3
+  muzzle: {fileID: 0}
+  shieldSprite: {fileID: 21300000, guid: 2ca41f6ff150f49559ed4ff33b323beb, type: 3}
 --- !u!58 &33427815
 CircleCollider2D:
   m_ObjectHideFlags: 0

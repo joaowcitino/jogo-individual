@@ -11,12 +11,31 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float invincibilityDuration = 1.5f;
     [SerializeField] private float blinkRate = 12f;
 
+    [Header("Shooting")]
+    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private float fireCooldown = 0.3f;
+    [SerializeField] private Transform muzzle; // optional; defaults to transform
+
+    [Header("Power-up Visuals")]
+    [SerializeField] private Sprite shieldSprite;
+
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
     private CircleCollider2D circleCol;
     private Vector2 moveInput;
     private bool isInvincible;
     private float invincibilityTimer;
+
+    // shooting
+    private float fireTimer;
+    private float fireRateMultiplier = 1f;
+    private bool fireHeld;
+    private Vector2 lastMoveDir = Vector2.up;
+
+    // power-up state
+    private float baseMoveSpeed;
+    private bool hasShield;
+    private GameObject shieldVisual;
 
     private static readonly Collider2D[] _overlapBuffer = new Collider2D[8];
 
@@ -25,11 +44,17 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         circleCol = GetComponent<CircleCollider2D>();
+        baseMoveSpeed = moveSpeed;
     }
 
     public void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
+    }
+
+    public void OnAttack(InputValue value)
+    {
+        fireHeld = value.isPressed;
     }
 
     private void FixedUpdate()
@@ -41,6 +66,7 @@ public class PlayerController : MonoBehaviour
         }
 
         rb.MovePosition(rb.position + moveInput.normalized * moveSpeed * Time.fixedDeltaTime);
+        if (moveInput.sqrMagnitude > 0.01f) lastMoveDir = moveInput.normalized;
 
         // Manual overlap check for enemies — more reliable than trigger callbacks
         // between dynamic and kinematic bodies
@@ -60,6 +86,18 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        // Shooting
+        if (GameManager.Instance != null && GameManager.Instance.IsGameActive)
+        {
+            fireTimer -= Time.deltaTime;
+            if (fireHeld && fireTimer <= 0f)
+            {
+                Fire();
+                fireTimer = fireCooldown / fireRateMultiplier;
+            }
+        }
+
+        // Invincibility blink
         if (!isInvincible) return;
         invincibilityTimer -= Time.deltaTime;
         spriteRenderer.enabled = Mathf.Sin(invincibilityTimer * blinkRate) > 0f;
@@ -68,6 +106,16 @@ public class PlayerController : MonoBehaviour
             isInvincible = false;
             spriteRenderer.enabled = true;
         }
+    }
+
+    private void Fire()
+    {
+        if (projectilePrefab == null) return;
+        Vector3 spawnPos = muzzle != null ? muzzle.position : transform.position;
+        var go = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
+        var proj = go.GetComponent<Projectile>();
+        if (proj != null) proj.Launch(lastMoveDir);
+        AudioManager.Instance?.PlayShoot();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -80,11 +128,59 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>Called by enemy projectiles when they hit the player.</summary>
+    public void ApplyHit()
+    {
+        TakeEnemyDamage();
+    }
+
     private void TakeEnemyDamage()
     {
+        if (isInvincible) return;
+
+        if (hasShield)
+        {
+            hasShield = false;
+            ShowShield(false);
+            isInvincible = true;
+            invincibilityTimer = invincibilityDuration;
+            AudioManager.Instance?.PlayShieldBreak();
+            return;
+        }
+
         isInvincible = true;
         invincibilityTimer = invincibilityDuration;
         AudioManager.Instance?.PlayDamage();
         GameManager.Instance?.TakeDamage();
+        ScreenShake.Shake(0.3f, 0.3f);
+    }
+
+    // ── Power-up hooks ──
+    public void SetFireRateMultiplier(float m) { fireRateMultiplier = Mathf.Max(0.1f, m); }
+    public void ResetFireRate() { fireRateMultiplier = 1f; }
+    public void SetSpeedMultiplier(float m) { moveSpeed = baseMoveSpeed * m; }
+    public void ResetSpeed() { moveSpeed = baseMoveSpeed; }
+    public void GrantShield() { hasShield = true; ShowShield(true); }
+
+    private void ShowShield(bool on)
+    {
+        if (on)
+        {
+            if (shieldVisual == null)
+            {
+                shieldVisual = new GameObject("Shield");
+                shieldVisual.transform.SetParent(transform, false);
+                var sr = shieldVisual.AddComponent<SpriteRenderer>();
+                sr.sprite = shieldSprite != null ? shieldSprite : spriteRenderer.sprite;
+                sr.color = new Color(0.3f, 0.6f, 1f, 0.45f);
+                sr.sortingOrder = 7;
+                shieldVisual.transform.localScale = Vector3.one * 1.7f;
+            }
+            shieldVisual.SetActive(true);
+        }
+        else if (shieldVisual != null)
+        {
+            shieldVisual.SetActive(false);
+        }
     }
 }
