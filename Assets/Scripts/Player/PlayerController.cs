@@ -29,8 +29,7 @@ public class PlayerController : MonoBehaviour
     // shooting
     private float fireTimer;
     private float fireRateMultiplier = 1f;
-    private bool fireHeld;
-    private Vector2 lastMoveDir = Vector2.up;
+    private InputAction attackAction;
 
     // power-up state
     private float baseMoveSpeed;
@@ -45,16 +44,15 @@ public class PlayerController : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         circleCol = GetComponent<CircleCollider2D>();
         baseMoveSpeed = moveSpeed;
+
+        var playerInput = GetComponent<PlayerInput>();
+        if (playerInput != null && playerInput.actions != null)
+            attackAction = playerInput.actions.FindAction("Attack");
     }
 
     public void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
-    }
-
-    public void OnAttack(InputValue value)
-    {
-        fireHeld = value.isPressed;
     }
 
     private void FixedUpdate()
@@ -66,7 +64,6 @@ public class PlayerController : MonoBehaviour
         }
 
         rb.MovePosition(rb.position + moveInput.normalized * moveSpeed * Time.fixedDeltaTime);
-        if (moveInput.sqrMagnitude > 0.01f) lastMoveDir = moveInput.normalized;
 
         // Manual overlap check for enemies — more reliable than trigger callbacks
         // between dynamic and kinematic bodies
@@ -90,7 +87,8 @@ public class PlayerController : MonoBehaviour
         if (GameManager.Instance != null && GameManager.Instance.IsGameActive)
         {
             fireTimer -= Time.deltaTime;
-            if (fireHeld && fireTimer <= 0f)
+            bool firing = attackAction != null && attackAction.IsPressed();
+            if (firing && fireTimer <= 0f)
             {
                 Fire();
                 fireTimer = fireCooldown / fireRateMultiplier;
@@ -114,7 +112,7 @@ public class PlayerController : MonoBehaviour
         Vector3 spawnPos = muzzle != null ? muzzle.position : transform.position;
         var go = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
         var proj = go.GetComponent<Projectile>();
-        if (proj != null) proj.Launch(lastMoveDir);
+        if (proj != null) proj.Launch(Vector2.up);
         AudioManager.Instance?.PlayShoot();
     }
 
