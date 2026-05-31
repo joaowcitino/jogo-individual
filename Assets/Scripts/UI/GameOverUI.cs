@@ -25,7 +25,7 @@ public class GameOverUI : MonoBehaviour
 
         if (resultText != null)
         {
-            resultText.text = GameOverData.IsVictory ? "✓ MISSAO CONCLUIDA!" : "✗ FALHA NA MISSAO";
+            resultText.text = GameOverData.IsVictory ? "MISSAO CONCLUIDA!" : "FALHA NA MISSAO";
             resultText.color = GameOverData.IsVictory
                 ? new Color(0f, 1f, 0.4f)
                 : new Color(1f, 0.3f, 0.1f);
