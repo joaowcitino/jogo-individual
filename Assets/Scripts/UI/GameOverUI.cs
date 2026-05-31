@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using TMPro;
 
 public class GameOverUI : MonoBehaviour
@@ -9,8 +10,19 @@ public class GameOverUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timeText;
     [SerializeField] private TextMeshProUGUI crystalsText;
 
+    [Header("Background swap (optional)")]
+    [SerializeField] private Image backgroundImage;
+    [SerializeField] private Sprite victoryBackground;
+    [SerializeField] private Sprite defeatBackground;
+
     private void Start()
     {
+        if (backgroundImage != null)
+        {
+            var bg = GameOverData.IsVictory ? victoryBackground : defeatBackground;
+            if (bg != null) backgroundImage.sprite = bg;
+        }
+
         if (resultText != null)
         {
             resultText.text = GameOverData.IsVictory ? "✓ MISSAO CONCLUIDA!" : "✗ FALHA NA MISSAO";
