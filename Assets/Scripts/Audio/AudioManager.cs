@@ -4,6 +4,12 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }
 
+    [Header("SFX Clips (assign in Inspector — falls back to procedural)")]
+    [SerializeField] private AudioClip collectClipAsset;
+    [SerializeField] private AudioClip damageClipAsset;
+    [SerializeField] private AudioClip victoryClipAsset;
+    [SerializeField] private AudioClip gameOverClipAsset;
+
     private AudioSource musicSource;
     private AudioSource sfxSource;
 
@@ -21,10 +27,11 @@ public class AudioManager : MonoBehaviour
         sfxSource = gameObject.AddComponent<AudioSource>();
         sfxSource.playOnAwake = false;
 
-        collectClip = GenerateTone(880f, 0.12f, envelope: true);
-        damageClip = GenerateTone(120f, 0.35f, envelope: false);
-        victoryClip = GenerateJingle(ascending: true);
-        gameOverClip = GenerateJingle(ascending: false);
+        // Use assigned clips if available, otherwise generate procedurally
+        collectClip  = collectClipAsset  != null ? collectClipAsset  : GenerateTone(880f, 0.12f, envelope: true);
+        damageClip   = damageClipAsset   != null ? damageClipAsset   : GenerateTone(120f, 0.35f, envelope: false);
+        victoryClip  = victoryClipAsset  != null ? victoryClipAsset  : GenerateJingle(ascending: true);
+        gameOverClip = gameOverClipAsset != null ? gameOverClipAsset : GenerateJingle(ascending: false);
 
         var ambientClip = GenerateAmbient();
         musicSource.clip = ambientClip;
