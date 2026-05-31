@@ -10,6 +10,13 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip victoryClipAsset;
     [SerializeField] private AudioClip gameOverClipAsset;
 
+    [Header("Combat SFX (assign in Inspector — falls back to procedural)")]
+    [SerializeField] private AudioClip shootClipAsset;
+    [SerializeField] private AudioClip enemyShootClipAsset;
+    [SerializeField] private AudioClip explosionClipAsset;
+    [SerializeField] private AudioClip powerUpClipAsset;
+    [SerializeField] private AudioClip shieldBreakClipAsset;
+
     private AudioSource musicSource;
     private AudioSource sfxSource;
 
@@ -17,6 +24,12 @@ public class AudioManager : MonoBehaviour
     private AudioClip damageClip;
     private AudioClip victoryClip;
     private AudioClip gameOverClip;
+
+    private AudioClip shootClip;
+    private AudioClip enemyShootClip;
+    private AudioClip explosionClip;
+    private AudioClip powerUpClip;
+    private AudioClip shieldBreakClip;
 
     private void Awake()
     {
@@ -32,6 +45,12 @@ public class AudioManager : MonoBehaviour
         damageClip   = damageClipAsset   != null ? damageClipAsset   : GenerateTone(120f, 0.35f, envelope: false);
         victoryClip  = victoryClipAsset  != null ? victoryClipAsset  : GenerateJingle(ascending: true);
         gameOverClip = gameOverClipAsset != null ? gameOverClipAsset : GenerateJingle(ascending: false);
+
+        shootClip       = shootClipAsset       != null ? shootClipAsset       : GenerateTone(660f, 0.08f, envelope: true);
+        enemyShootClip  = enemyShootClipAsset  != null ? enemyShootClipAsset  : GenerateTone(300f, 0.10f, envelope: true);
+        explosionClip   = explosionClipAsset   != null ? explosionClipAsset   : GenerateTone(90f,  0.25f, envelope: false);
+        powerUpClip     = powerUpClipAsset     != null ? powerUpClipAsset     : GenerateJingle(ascending: true);
+        shieldBreakClip = shieldBreakClipAsset != null ? shieldBreakClipAsset : GenerateTone(200f, 0.20f, envelope: false);
 
         var ambientClip = GenerateAmbient();
         musicSource.clip = ambientClip;
@@ -62,6 +81,12 @@ public class AudioManager : MonoBehaviour
     public void PlayDamage() => sfxSource.PlayOneShot(damageClip, 0.8f);
     public void PlayVictory() => sfxSource.PlayOneShot(victoryClip, 1f);
     public void PlayGameOver() => sfxSource.PlayOneShot(gameOverClip, 1f);
+
+    public void PlayShoot() => sfxSource.PlayOneShot(shootClip, 0.4f);
+    public void PlayEnemyShoot() => sfxSource.PlayOneShot(enemyShootClip, 0.3f);
+    public void PlayExplosion() => sfxSource.PlayOneShot(explosionClip, 0.6f);
+    public void PlayPowerUp() => sfxSource.PlayOneShot(powerUpClip, 0.7f);
+    public void PlayShieldBreak() => sfxSource.PlayOneShot(shieldBreakClip, 0.6f);
 
     private AudioClip GenerateTone(float freq, float duration, bool envelope)
     {

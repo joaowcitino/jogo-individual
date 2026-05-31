@@ -1551,6 +1551,7 @@ GameObject:
   - component: {fileID: 493605227}
   - component: {fileID: 493605226}
   - component: {fileID: 493605228}
+  - component: {fileID: 493605229}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1632,6 +1633,18 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 493605225}
   m_Enabled: 1
+--- !u!114 &493605229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 493605225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 626d20b4ddbac4162a2ae8211abe10cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenShake
 --- !u!1 &565839768
 GameObject:
   m_ObjectHideFlags: 0
@@ -3883,6 +3896,11 @@ MonoBehaviour:
   damageClipAsset: {fileID: 8300000, guid: 37c931d3631fe417c9495f2ac3dcc117, type: 3}
   victoryClipAsset: {fileID: 8300000, guid: 563735a41bf3f47a88a5d3298d320483, type: 3}
   gameOverClipAsset: {fileID: 8300000, guid: 51ae9827263ea4f5a82315ebeef71edf, type: 3}
+  shootClipAsset: {fileID: 8300000, guid: 9a39d9e43ab264ad2a2e3e0dc4034eb1, type: 3}
+  enemyShootClipAsset: {fileID: 0}
+  explosionClipAsset: {fileID: 8300000, guid: 51ae9827263ea4f5a82315ebeef71edf, type: 3}
+  powerUpClipAsset: {fileID: 8300000, guid: 262f93e93dbb14c9ba54a85515b63df7, type: 3}
+  shieldBreakClipAsset: {fileID: 8300000, guid: 37c931d3631fe417c9495f2ac3dcc117, type: 3}
 --- !u!4 &1710023959
 Transform:
   m_ObjectHideFlags: 0
