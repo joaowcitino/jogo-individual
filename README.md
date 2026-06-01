@@ -1,5 +1,7 @@
 # 🚀 Space Station Survivor
 
+▶️ **Jogue agora no navegador:** <https://joaowcitino.itch.io/space-station-survivor>
+
 Um **arcade shooter top-down 2D** feito em Unity. Você pilota uma nave presa em uma estação espacial em colapso: colete cristais de energia para repor seu oxigênio e alcançar a meta, enquanto destrói e desvia de ondas de naves inimigas cada vez mais perigosas.
 
 **Autor:** João Citino
@@ -103,8 +105,8 @@ Todos os assets utilizados são de uso livre. Agradecimentos aos autores:
 
 ## 🔗 Links
 
-- **Jogue no navegador (itch.io):** _[adicionar link após o upload]_
-- **Repositório:** _[este repositório]_
+- **Jogue no navegador (itch.io):** <https://joaowcitino.itch.io/space-station-survivor>
+- **Repositório:** <https://github.com/joaowcitino/jogo-individual>
 
 ---
 
