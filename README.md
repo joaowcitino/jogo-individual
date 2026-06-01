@@ -4,8 +4,8 @@
 
 Um **arcade shooter top-down 2D** feito em Unity. Você pilota uma nave presa em uma estação espacial em colapso: colete cristais de energia para repor seu oxigênio e alcançar a meta, enquanto destrói e desvia de ondas de naves inimigas cada vez mais perigosas.
 
-**Autor:** João Citino
-**Disciplina:** Jogos Digitais 2025.2 — Insper
+**Autor:** João Whitaker Citino
+**Disciplina:** Jogos Digitais 2026.1 — Insper
 **Engine:** Unity 6 (6000.3.12f1) · Universal Render Pipeline 2D
 **Plataforma:** WebGL (900×600) — jogável no navegador
 
@@ -110,4 +110,4 @@ Todos os assets utilizados são de uso livre. Agradecimentos aos autores:
 
 ---
 
-*Projeto individual desenvolvido para a disciplina de Jogos Digitais (Insper, 2025.2).*
+*Projeto individual desenvolvido por João Whitaker Citino para a disciplina de Jogos Digitais (Insper, 2026.1).*
