@@ -55,7 +55,8 @@ public class AudioManager : MonoBehaviour
         var ambientClip = GenerateAmbient();
         musicSource.clip = ambientClip;
         musicSource.loop = true;
-        musicSource.volume = 0.35f;
+        musicSource.volume = 0.45f;
+        musicSource.playOnAwake = false;
         musicSource.Play();
     }
 
@@ -135,28 +136,38 @@ public class AudioManager : MonoBehaviour
     private AudioClip GenerateAmbient()
     {
         const int sr = 44100;
-        const int duration = 10;
-        int n = sr * duration;
-        float[] data = new float[n];
-        float fadeLen = sr * 0.25f;
 
-        for (int i = 0; i < n; i++)
+        // Synthwave-style minor arpeggio over a 4-chord progression (Am - F - C - G),
+        // in an audible mid range so it's clearly heard on any speaker.
+        float[] melody =
         {
-            float t = (float)i / sr;
-            float s = 0.50f * Mathf.Sin(2f * Mathf.PI * 55f * t)
-                    + 0.25f * Mathf.Sin(2f * Mathf.PI * 110f * t)
-                    + 0.12f * Mathf.Sin(2f * Mathf.PI * 82.5f * t)
-                    + 0.06f * Mathf.Sin(2f * Mathf.PI * 165f * t);
-            s *= 0.65f + 0.35f * Mathf.Sin(2f * Mathf.PI * 0.25f * t);
+            440.00f, 523.25f, 659.25f, 523.25f, // Am: A4 C5 E5 C5
+            349.23f, 440.00f, 523.25f, 440.00f, // F:  F4 A4 C5 A4
+            261.63f, 329.63f, 392.00f, 329.63f, // C:  C4 E4 G4 E4
+            392.00f, 493.88f, 587.33f, 493.88f  // G:  G4 B4 D5 B4
+        };
+        float[] bass = { 110.00f, 87.31f, 65.41f, 98.00f }; // A2 F2 C2 G2 (one per chord)
 
-            float fade = 1f;
-            if (i < fadeLen) fade = i / fadeLen;
-            if (i > n - fadeLen) fade = (n - i) / fadeLen;
+        const float noteDur = 0.30f;
+        int noteSamples = (int)(sr * noteDur);
+        int total = melody.Length * noteSamples;
+        float[] data = new float[total];
 
-            data[i] = s * fade * 0.28f;
+        for (int note = 0; note < melody.Length; note++)
+        {
+            float freq = melody[note];
+            float bassFreq = bass[note / 4];
+            for (int i = 0; i < noteSamples; i++)
+            {
+                float t = (float)i / sr;
+                float env = Mathf.Sin(Mathf.PI * (float)i / noteSamples); // smooth attack/release
+                float lead = Mathf.Sin(2f * Mathf.PI * freq * t) * 0.22f * env;
+                float bassWave = Mathf.Sin(2f * Mathf.PI * bassFreq * t) * 0.16f;
+                data[note * noteSamples + i] = lead + bassWave;
+            }
         }
 
-        var clip = AudioClip.Create("ambient", n, 1, sr, false);
+        var clip = AudioClip.Create("ambient", total, 1, sr, false);
         clip.SetData(data, 0);
         return clip;
     }

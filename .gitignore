@@ -4,6 +4,9 @@
 # Brainstorm visual companion mockups
 /.superpowers/
 
+# Local MCP server config (machine-specific)
+/.mcp.json
+
 # Dev screenshots (generated via MCP)
 /[Aa]ssets/Screenshots/
 /[Aa]ssets/Screenshots.meta
